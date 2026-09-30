@@ -1,0 +1,5 @@
+node_modules/
+.env
+data/conversations.csv
+data/conversations.xlsx
+*.log

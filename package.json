@@ -1,0 +1,28 @@
+{
+  "name": "jf2-faq-bot",
+  "version": "1.0.0",
+  "description": "Chatbot de FAQ para a Justica Federal da 2a Regiao (TRF2/JFRJ/JFES) - widget + backend Node.js",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "export:xlsx": "node scripts/export-xlsx.js"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "groq-sdk": "^0.7.0",
+    "uuid": "^9.0.1"
+  },
+  "optionalDependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
