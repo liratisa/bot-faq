@@ -161,11 +161,6 @@ function search(query) {
 function formatContact(entry) {
     const lines = [];
 
-    entry = entry
-        .split(" ")
-        .map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
-        .join(" ");
-
     lines.push(`**${entry.nome}**`);
     if (entry.municipio || entry.uf) {
         lines.push(`${entry.municipio || ""}${entry.municipio && entry.uf ? " - " : ""}${entry.uf || ""}\n`);
