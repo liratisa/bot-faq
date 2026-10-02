@@ -294,7 +294,7 @@ function feedbackReasonMessage() {
 function centralContactMessage() {
     const info = kb.CHAMADO_INFO;
     return (
-        "Agradeço por explicar. Para que nossa equipe possa te ajudar da melhor forma, escolha uma das opções abaixo:\n\n" +
+        "Agradeço por explicar. Para que nossa equipe possa te ajudar da melhor forma, entre em contato através de uma das opções abaixo:\n\n" +
         `📝 Formulário: ${info.formulario}\n` +
         `📞 Telefone: ${info.telefone}`
     );
