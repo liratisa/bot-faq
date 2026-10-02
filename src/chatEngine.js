@@ -85,9 +85,9 @@ function feedbackReasonMessage() {
 function centralContactMessage() {
     const info = kb.CHAMADO_INFO;
     return (
-        "Agradeço por explicar. Para que a equipe possa te atender, abra um chamado pelo formulário ou ligue para a Central de Atendimento:\n\n" +
-        `• Formulário: ${info.formulario}\n` +
-        `• Telefone: ${info.telefone}`
+        "Agradeço por explicar. Para que nossa equipe possa te ajudar da melhor forma, escolha uma das opções abaixo:\n\n" +
+        `📝 Formulário: ${info.formulario}\n` +
+        `📞 Telefone: ${info.telefone}`
     );
 }
 
@@ -96,7 +96,7 @@ function ticketClosingMessage() {
 }
 
 function notUnderstoodMessage() {
-    return "Desculpe, não entendi... 😕 Pode digitar novamente, com outras palavras, ou escolher uma opção do menu?";
+    return "Desculpe, não entendi... 😕 Pode digitar novamente, com outras palavras, ou escolher uma opção do menu?" + menuText();
 }
 
 function closingMessage() {

@@ -30,7 +30,7 @@ const MENU_META = {
         needsUnidade: true,
     },
     cadastro: {
-        label: "Cadastro",
+        label: "Cadastro no EPROC",
         keywords: ["cadastro", "cadastros", "cadastrar", "fazer cadastro", "fazer um cadastro"],
         needsUnidade: false,
         special: "cadastro",
@@ -64,7 +64,7 @@ const MENU_META = {
     //     needsUnidade: true,
     // },
     contato_unidade: {
-        label: "Contato / endereço de uma unidade (vara, foro etc.)",
+        label: "Contato de unidades (vara, foro etc.)",
         keywords: ["contato", "endereco", "telefone", "onde fica", "unidade", "vara", "foro", "endereco"],
         needsUnidade: false,
         special: "contato_unidade",
