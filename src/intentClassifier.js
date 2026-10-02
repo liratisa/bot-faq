@@ -60,9 +60,10 @@ function buildSystemPrompt() {
 
     return `Você é um classificador de assunto para um chatbot de FAQ da Justiça Federal da 2ª Região (TRF2, JFRJ, JFES).
 
-Sua ÚNICA tarefa é classificar o texto do usuário em dois eixos:
+Sua ÚNICA tarefa é classificar o texto do usuário em três eixos:
 1. QUAL assunto, entre os listados abaixo (eles correspondem exatamente aos conteúdos que existem na base de conhecimento);
-2. QUAL unidade (TRF2, JFRJ ou JFES), se der para saber.
+2. QUAL unidade (TRF2, JFRJ ou JFES), se der para saber;
+3. QUAL a intenção da mensagem: "assunto", "saudacao", "despedida", "menu", "suporte" ou "outro".
 
 Você NUNCA responde à dúvida do usuário, NUNCA gera texto explicativo, NUNCA inventa informação. Apenas classifica.
 Você NÃO avalia o tom da mensagem nem tenta descobrir se é uma dúvida, um erro ou uma reclamação: escolha apenas o assunto da lista que mais se relaciona ao texto. Por exemplo, "não estou conseguindo consultar meu processo" deve ser classificado no assunto de consulta de processos, como qualquer outra mensagem sobre esse tema.
@@ -71,12 +72,15 @@ Assuntos possíveis (use exatamente estes ids):
 ${catalog}
 
 Responda SOMENTE com um JSON válido, sem markdown, sem texto extra, no formato:
-{"id": "<um dos ids acima ou null se não identificar>", "unidade": "<TRF2|JFRJ|JFES ou null>", "confianca": <número de 0 a 1>}
+{"id": "<um dos ids acima ou null se não identificar>", "unidade": "<TRF2|JFRJ|JFES ou null>", "intencao": "<assunto|saudacao|despedida|menu|suporte|outro>", "confianca": <número de 0 a 1>}
 
 Regras:
 - Classifique SOMENTE entre os assuntos da lista acima. Se o texto não corresponder claramente a nenhum deles, retorne "id": null.
 - Só preencha "unidade" se o usuário citou claramente TRF2, Rio de Janeiro/JFRJ ou Espírito Santo/JFES (ou cidades dessas seções). Caso contrário, "unidade": null.
-- Nunca crie um id que não esteja na lista.`;
+- Nunca crie um id que não esteja na lista.
+- "intencao": use "assunto" quando a mensagem tratar de um dos assuntos da lista (e então preencha o "id"); "saudacao" SOMENTE quando a mensagem for apenas um cumprimento ou gentileza de abertura (oi, olá, bom dia, e aí, tudo bem?); "despedida" SOMENTE quando for apenas uma despedida ou agradecimento de encerramento (tchau, até logo, valeu, obrigado, era só isso); "menu" quando o usuário pedir para ver o menu, as opções ou recomeçar; "outro" para qualquer coisa que não se encaixe.
+- "suporte" é uma exceção restrita: use quando o usuário relatar dificuldade para ENTRAR, ACESSAR ou fazer LOGIN no sistema (senha, login, acesso negado, "não consigo entrar"), mesmo que diga ser perito, advogado etc. e desde que NÃO esteja perguntando como se cadastrar. Nesse caso "id": null. (Isso não muda a regra acima: problemas para consultar processo, emitir custas etc. continuam classificados no assunto correspondente.)
+- Se a mensagem trouxer um assunto da lista junto com um cumprimento, use "assunto" e preencha o "id".`;
 }
 
 /**
@@ -134,6 +138,21 @@ async function requestWithRetry(config) {
     throw lastErr;
 }
 
+// Alguns modelos devolvem o JSON dentro de ```json ... ``` ou com texto em volta; extrai so o objeto.
+function parseJsonLoose(text) {
+    const cleaned = String(text)
+        .replace(/```(?:json)?/gi, "")
+        .trim();
+    try {
+        return JSON.parse(cleaned);
+    } catch (e) {
+        const a = cleaned.indexOf("{");
+        const b = cleaned.lastIndexOf("}");
+        if (a !== -1 && b > a) return JSON.parse(cleaned.slice(a, b + 1));
+        throw e;
+    }
+}
+
 async function classify(userText) {
     let data = JSON.stringify({
         model: model,
@@ -168,13 +187,14 @@ async function classify(userText) {
     try {
         const response = await requestWithRetry(config);
         const text = response.data.choices?.[0]?.message?.content || "{}";
-        const parsed = JSON.parse(text);
+        const parsed = parseJsonLoose(text);
         console.log(parsed);
         const knownIds = kb.getKnownIds();
         const id = knownIds.includes(parsed.id) ? parsed.id : null;
         const unidade = ["TRF2", "JFRJ", "JFES"].includes(parsed.unidade) ? parsed.unidade : null;
         const confianca = typeof parsed.confianca === "number" ? parsed.confianca : 0;
-        return { id, unidade, confianca };
+        const intencao = ["assunto", "saudacao", "despedida", "menu", "suporte", "outro"].includes(parsed.intencao) ? parsed.intencao : "outro";
+        return { id, unidade, confianca, intencao };
     } catch (err) {
         console.error("[intentClassifier] erro ao classificar:", err.code ? `${err.code} - ${err.message}` : err.message);
         return { id: null, unidade: null, confianca: 0, aiError: true };

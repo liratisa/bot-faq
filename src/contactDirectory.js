@@ -14,12 +14,74 @@ function normalize(str) {
 // Palavras que aparecem em frases como "quero o telefone de sao goncalo" mas
 // nao identificam uma unidade. Sao ignoradas na comparacao por palavras.
 const STOPWORDS = new Set([
-    "a", "as", "o", "os", "um", "uma", "de", "da", "do", "das", "dos", "e", "em", "no", "na", "nos", "nas",
-    "para", "pra", "por", "com", "que", "qual", "quais", "me", "meu", "minha", "eu", "quero", "queria",
-    "preciso", "gostaria", "saber", "favor", "passa", "passar", "informar", "informe", "informa",
-    "telefone", "telefones", "fone", "contato", "contatos", "endereco", "enderecos", "email", "emails",
-    "whatsapp", "zap", "numero", "onde", "fica", "ficam", "esta", "estao", "tem", "ha",
-    "vara", "varas", "federal", "federais", "foro", "foros", "unidade", "unidades", "juizado", "secao",
+    "a",
+    "as",
+    "o",
+    "os",
+    "um",
+    "uma",
+    "de",
+    "da",
+    "do",
+    "das",
+    "dos",
+    "e",
+    "em",
+    "no",
+    "na",
+    "nos",
+    "nas",
+    "para",
+    "pra",
+    "por",
+    "com",
+    "que",
+    "qual",
+    "quais",
+    "me",
+    "meu",
+    "minha",
+    "eu",
+    "quero",
+    "queria",
+    "preciso",
+    "gostaria",
+    "saber",
+    "favor",
+    "passa",
+    "passar",
+    "informar",
+    "informe",
+    "informa",
+    "telefone",
+    "telefones",
+    "fone",
+    "contato",
+    "contatos",
+    "endereco",
+    "enderecos",
+    "email",
+    "emails",
+    "whatsapp",
+    "zap",
+    "numero",
+    "onde",
+    "fica",
+    "ficam",
+    "esta",
+    "estao",
+    "tem",
+    "ha",
+    "vara",
+    "varas",
+    "federal",
+    "federais",
+    "foro",
+    "foros",
+    "unidade",
+    "unidades",
+    "juizado",
+    "secao",
 ]);
 
 /** Quebra o texto (ja normalizado) em palavras, preservando hifen (codigos como "02vf-ca"). */
@@ -98,6 +160,13 @@ function search(query) {
 /** Formata um registro de contato em texto legivel, SEM alterar os dados. */
 function formatContact(entry) {
     const lines = [];
+
+    entry = entry
+        .toLowerCase()
+        .split(" ")
+        .map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+        .join(" ");
+
     lines.push(`**${entry.nome}**`);
     if (entry.municipio || entry.uf) {
         lines.push(`${entry.municipio || ""}${entry.municipio && entry.uf ? " - " : ""}${entry.uf || ""}\n`);

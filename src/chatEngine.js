@@ -40,6 +40,215 @@ function isHelpedNo(text) {
     return HELPED_NO_WORDS.includes(normalize(text));
 }
 
+// ---------------------------------------------------------------------
+// Intencoes simples, reconhecidas por codigo (sem IA) em QUALQUER etapa:
+// "menu", saudacoes ("oi", "bom dia"...) e despedidas ("tchau", "obrigado"...).
+// Para acrescentar palavras, basta editar as listas abaixo.
+// Tudo e comparado sem acentos, sem pontuacao e em minusculas. A mensagem
+// inteira precisa ser composta so por essas palavras: "oi, quero o telefone
+// de niteroi" NAO e saudacao - segue o fluxo normal (menu/IA).
+// ---------------------------------------------------------------------
+
+// Frases que pedem o menu (mensagem inteira) - alem de qualquer frase curta com a palavra "menu"
+const MENU_PHRASES = [
+    "menu",
+    "menu principal",
+    "inicio",
+    "voltar",
+    "voltar ao inicio",
+    "voltar ao menu",
+    "voltar pro menu",
+    "opcoes",
+    "ver opcoes",
+    "mostrar opcoes",
+    "quais as opcoes",
+    "recomecar",
+    "comecar",
+    "comecar de novo",
+    "reiniciar",
+    "principal",
+];
+
+// Saudacoes: a mensagem so pode conter estas palavras, e ao menos um "gatilho"
+const GREETING_FILLER = new Set([
+    "tudo",
+    "td",
+    "bem",
+    "bom",
+    "boa",
+    "dia",
+    "tarde",
+    "noite",
+    "certo",
+    "e",
+    "ai",
+    "ae",
+    "fala",
+    "pessoal",
+    "gente",
+    "turma",
+    "amigo",
+    "amiga",
+    "bot",
+    "assistente",
+    "como",
+    "vai",
+    "voce",
+    "vc",
+]);
+function isGreetingTrigger(tok) {
+    return /^o+i+e*$/.test(tok) || /^ol+a+$/.test(tok) || ["opa", "eai", "hey", "hello", "hi", "salve", "alo", "oie", "eae"].includes(tok);
+}
+
+// Despedidas / agradecimentos
+const FAREWELL_TRIGGERS = new Set(["tchau", "tchauzinho", "xau", "adeus", "flw", "falou", "valeu", "vlw", "obrigado", "obrigada", "brigado", "brigada", "obg", "agradeco", "ate"]);
+const FAREWELL_FILLER = new Set([
+    "muito",
+    "muitissimo",
+    "mto",
+    "mt",
+    "ok",
+    "okay",
+    "ta",
+    "certo",
+    "entao",
+    "pra",
+    "por",
+    "tudo",
+    "tenha",
+    "um",
+    "uma",
+    "bom",
+    "boa",
+    "dia",
+    "tarde",
+    "noite",
+    "logo",
+    "mais",
+    "amanha",
+    "breve",
+    "proxima",
+    "ajuda",
+    "a",
+    "o",
+    "e",
+    "voces",
+    "voce",
+    "vc",
+    "gente",
+    "pessoal",
+    "fique",
+    "com",
+    "deus",
+    "ate",
+]);
+const FAREWELL_PHRASES = [
+    "so isso",
+    "e so isso",
+    "era so isso",
+    "por hoje e so",
+    "por hoje so",
+    "nada mais",
+    "nao preciso de mais nada",
+    "nao quero mais nada",
+    "tenho mais nada",
+    "pode encerrar",
+    "encerrar",
+    "sair",
+    "fim",
+    "finalizar",
+    "encerrar conversa",
+    "acabou",
+    "ja deu",
+    "ja resolvi",
+    "era isso",
+    "e isso",
+];
+
+// "Oi, tudo bem?!" -> ["oi", "tudo", "bem"]
+function wordsOf(text) {
+    return normalize(text)
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter(Boolean);
+}
+
+/** Retorna "menu" | "farewell" | "greeting" | null para a mensagem digitada. */
+function detectSimpleIntent(text) {
+    const toks = wordsOf(text);
+    if (toks.length === 0 || toks.length > 6) return null;
+    const joined = toks.join(" ");
+
+    // menu: frase pronta, ou frase curta (ate 5 palavras) contendo "menu"
+    if (MENU_PHRASES.includes(joined) || (toks.includes("menu") && toks.length <= 5)) return "menu";
+
+    // despedida: frase pronta, ou so palavras de despedida com ao menos um gatilho
+    if (FAREWELL_PHRASES.includes(joined)) return "farewell";
+    if (toks.some((t) => FAREWELL_TRIGGERS.has(t)) && toks.every((t) => FAREWELL_TRIGGERS.has(t) || FAREWELL_FILLER.has(t))) {
+        return "farewell";
+    }
+
+    // saudacao: so palavras de saudacao, com ao menos um gatilho ("oi", "ola", "bom dia"...)
+    const hasTrigger = toks.some(isGreetingTrigger) || /(^| )(bom dia|boa tarde|boa noite|e ai|e ae|fala ai)( |$)/.test(joined);
+    if (hasTrigger && toks.every((t) => isGreetingTrigger(t) || GREETING_FILLER.has(t))) return "greeting";
+
+    return null;
+}
+
+/**
+ * Em algumas etapas a propria etapa ja da outro significado a essas palavras
+ * (ex.: "obrigado" em "O conteudo te ajudou?" significa SIM). Nelas, a
+ * resposta da etapa tem prioridade sobre a deteccao acima.
+ */
+function stateClaimsInput(state, text, intent) {
+    if (state === "awaiting_satisfaction") return isHelpedYes(text) || isHelpedNo(text);
+    if (state === "awaiting_more_help") return isYes(text) || isNo(text);
+    // motivo em texto livre: "obrigado"/"tchau" contam como o motivo (segue para o contato do chamado)
+    if (state === "awaiting_feedback_reason") return intent === "farewell";
+    return false;
+}
+
+function resetToMenuState(session) {
+    session.state = "menu";
+    session.pendingId = null;
+    session.forceAi = false;
+    session.contactResults = [];
+}
+
+function handleSimpleIntent(session, intent) {
+    if (intent === "menu") {
+        resetToMenuState(session);
+        return {
+            messages: greetingMessages().slice(1), // so o menu
+            matchedId: null,
+            unidade: null,
+            matchMethod: "menu",
+            confidence: null,
+        };
+    }
+    if (intent === "greeting") {
+        resetToMenuState(session);
+        return {
+            messages: greetingMessages(),
+            matchedId: null,
+            unidade: null,
+            matchMethod: "system",
+            confidence: null,
+        };
+    }
+    // farewell
+    session.state = "closed";
+    session.pendingId = null;
+    session.forceAi = false;
+    return {
+        messages: [{ text: closingMessage() }],
+        matchedId: null,
+        unidade: null,
+        matchMethod: "system",
+        confidence: null,
+    };
+}
+
 function menuText() {
     const items = kb.getMenuItems();
     const lines = items.map((it) => `**${it.number}**. ${it.label}`);
@@ -85,7 +294,7 @@ function feedbackReasonMessage() {
 function centralContactMessage() {
     const info = kb.CHAMADO_INFO;
     return (
-        "Agradeço por explicar. Para que nossa equipe possa te ajudar da melhor forma, escolha uma das opções abaixo:\n\n" +
+        "Agradeço por explicar. Para que nossa equipe possa te ajudar da melhor forma, escolha uma das opções abaixo:\n" +
         `📝 Formulário: ${info.formulario}\n` +
         `📞 Telefone: ${info.telefone}`
     );
@@ -96,7 +305,32 @@ function ticketClosingMessage() {
 }
 
 function notUnderstoodMessage() {
-    return "Desculpe, não entendi... 😕 Pode digitar novamente, com outras palavras, ou escolher uma opção do menu?" + menuText();
+    return "Desculpe, não entendi... 😕 Por favor, digite novamente, com outras palavras, ou escolher uma das opções abaixo:\n" + menuText();
+}
+
+// Problema de acesso/login (ou outro caso sem conteudo na base): encaminha para a Central de Atendimento
+function supportMessages(session) {
+    const info = kb.CHAMADO_INFO;
+    session.state = "menu";
+    session.pendingId = null;
+    session.forceAi = false;
+    return [
+        {
+            text:
+                "Entendi a sua situação. 😕 Para esse tipo de problema não tenho uma orientação pronta, mas a equipe da Central de Atendimento pode te ajudar. Abra um chamado pelo formulário ou ligue:\n\n" +
+                `• Formulário: ${info.formulario}\n` +
+                `• Telefone: ${info.telefone}`,
+        },
+        { text: "Se precisar de outro assunto, é só digitar **menu**." },
+    ];
+}
+
+// Plano B quando a IA esta fora do ar: reconhece por palavras um relato de problema de acesso
+function looksLikeAccessProblem(text) {
+    const t = normalize(text);
+    const problema = /(nao consigo|nao estou conseguindo|nao consegui|sem conseguir|nao consegue|erro|problema|dificuldade|travou|bloquead|negado|esqueci|nao funciona)/.test(t);
+    const acesso = /(entrar|acessar|acesso|logar|login|senha|usuario e senha)/.test(t);
+    return problema && acesso;
 }
 
 function closingMessage() {
@@ -220,7 +454,10 @@ function resolveAndRespond(session, id, unidade) {
  * resolveAndRespond, ou fallback de "nao entendi".
  */
 async function handleFreeText(session, text) {
-    if (!session.forceAi) {
+    // Um numero do menu (ex.: "2") sempre vale, mesmo depois de um "nao entendi"
+    const isNumberOnly = /^\s*\d+\s*$/.test(text);
+
+    if (!session.forceAi || isNumberOnly) {
         const menuId = kb.matchMenuInput(text);
         if (menuId) {
             const result = resolveAndRespond(session, menuId, null);
@@ -228,11 +465,30 @@ async function handleFreeText(session, text) {
         }
     }
 
-    const ai = await intentClassifier.classify(text);
+    // Numero que nao existe no menu: nao precisa gastar uma chamada a IA
+    const ai = isNumberOnly ? { id: null, unidade: null, confianca: 0, intencao: "outro" } : await intentClassifier.classify(text);
 
     if (ai?.id) {
         const result = resolveAndRespond(session, ai.id, ai.unidade);
         return { ...result, matchMethod: "ai", confidence: ai.confianca };
+    }
+
+    // Sem assunto, mas a IA percebeu saudacao / despedida / pedido de menu que a regra de palavras nao pegou
+    const INTENT_FROM_AI = { saudacao: "greeting", despedida: "farewell", menu: "menu" };
+    if (INTENT_FROM_AI[ai?.intencao] && (ai.confianca ?? 0) >= 0.6) {
+        const result = handleSimpleIntent(session, INTENT_FROM_AI[ai.intencao]);
+        return { ...result, matchMethod: "ai", confidence: ai.confianca };
+    }
+
+    // Problema de acesso/login: nao ha conteudo na base -> encaminha para a Central de Atendimento
+    if ((ai?.intencao === "suporte" && (ai.confianca ?? 0) >= 0.6) || (ai?.aiError && looksLikeAccessProblem(text))) {
+        return {
+            messages: supportMessages(session),
+            matchedId: "suporte",
+            unidade: null,
+            matchMethod: ai?.aiError ? "fallback" : "ai",
+            confidence: ai?.confianca ?? 0,
+        };
     }
 
     session.forceAi = true;
@@ -253,6 +509,12 @@ async function handleFreeText(session, text) {
  */
 async function processMessage(session, rawText) {
     const text = (rawText || "").toString().slice(0, 2000);
+
+    // "menu", saudacoes e despedidas valem em qualquer etapa da conversa (antes do menu/IA)
+    const simpleIntent = detectSimpleIntent(text);
+    if (simpleIntent && !stateClaimsInput(session.state, text, simpleIntent)) {
+        return handleSimpleIntent(session, simpleIntent);
+    }
 
     switch (session.state) {
         // Submenu "Cadastro": escolhe o assunto (numero ou nome) e segue o fluxo normal (unidade -> conteudo)
@@ -419,15 +681,23 @@ async function processMessage(session, rawText) {
         }
 
         case "closed": {
+            // Conversa ja encerrada: a nova mensagem e tratada como inicio de um novo atendimento
+            // (antes, qualquer texto aqui virava so a saudacao e a duvida era perdida).
             session.state = "menu";
             session.forceAi = false;
-            return {
-                messages: greetingMessages(),
-                matchedId: null,
-                unidade: null,
-                matchMethod: "system",
-                confidence: null,
-            };
+            const result = await handleFreeText(session, text);
+            if (result.matchMethod === "fallback" && result.matchedId !== "suporte") {
+                // nao deu para entender: recomeca com a saudacao + menu, como antes
+                session.forceAi = false;
+                return {
+                    messages: greetingMessages(),
+                    matchedId: null,
+                    unidade: null,
+                    matchMethod: "system",
+                    confidence: null,
+                };
+            }
+            return result;
         }
 
         case "menu":
