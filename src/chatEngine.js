@@ -261,7 +261,7 @@ function greetingMessages() {
             text: "Olá! 👋 Sou o assistente virtual da Justiça Federal da 2ª Região.\n\n" + "Posso ajudar com dúvidas sobre os Sistemas Processuais.",
         },
         {
-            text: "Selecione uma opção abaixo ou digite sua dúvida:\n\n" + menuText() + "\n\n*💡Você pode retornar para as opções a qualquer momento. Basta digitar **menu**.",
+            text: "Selecione uma opção abaixo ou digite sua dúvida:\n\n" + menuText() + "\n\n*💡Você pode retornar para as opções a qualquer momento. Basta digitar **menu**.*",
         },
     ];
 }
