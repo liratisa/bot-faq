@@ -160,6 +160,7 @@ function search(query) {
 /** Formata um registro de contato em texto legivel, SEM alterar os dados. */
 function formatContact(entry) {
     const lines = [];
+    console.log(entry);
     lines.push(`**${entry.nome}**`);
     if (entry.municipio || entry.uf) {
         lines.push(`${entry.municipio || ""}${entry.municipio && entry.uf ? " - " : ""}${entry.uf || ""}\n`);
