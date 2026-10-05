@@ -60,3 +60,8 @@ app.post("/api/chat", async (req, res) => {
         });
     }
 });
+
+app.listen(PORT, () => {
+    console.log(`JF2 FAQ Bot rodando em http://localhost:${PORT}`);
+    console.log(`Script do widget: http://localhost:${PORT}/widget/widget.js`);
+});
