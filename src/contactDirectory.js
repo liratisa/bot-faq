@@ -161,6 +161,8 @@ function search(query) {
 function formatContact(entry) {
     const lines = [];
 
+    entry = entry.toLowerCase();
+
     lines.push(`**${entry.nome}**`);
     if (entry.municipio || entry.uf) {
         lines.push(`${entry.municipio || ""}${entry.municipio && entry.uf ? " - " : ""}${entry.uf || ""}\n`);

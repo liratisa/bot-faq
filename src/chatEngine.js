@@ -255,13 +255,15 @@ function menuText() {
     return lines.join("\n");
 }
 
+// + "Posso ajudar com dúvidas sobre os Sistemas Processuais."
+//+ "\n\n*💡Você pode retornar para as opções a qualquer momento, basta digitar **menu**.*"
 function greetingMessages() {
     return [
         {
-            text: "Olá! 👋 Sou o assistente virtual da Justiça Federal da 2ª Região.\n\n" + "Posso ajudar com dúvidas sobre os Sistemas Processuais.",
+            text: "Olá! 👋 Sou o assistente virtual da Justiça Federal da 2ª Região.",
         },
         {
-            text: "Selecione uma opção abaixo ou digite sua dúvida:\n\n" + menuText() + "\n\n*💡Você pode retornar para as opções a qualquer momento, basta digitar **menu**.*",
+            text: "Selecione uma opção abaixo ou digite sua dúvida:\n\n" + menuText(),
         },
     ];
 }
@@ -318,8 +320,8 @@ function supportMessages(session) {
         {
             text:
                 "Entendi a sua situação. 😕 Para esse tipo de problema não tenho uma orientação pronta, mas a equipe da Central de Atendimento pode te ajudar. Abra um chamado pelo formulário ou ligue:\n\n" +
-                `• Formulário: ${info.formulario}\n` +
-                `• Telefone: ${info.telefone}`,
+                `📝 Formulário: ${info.formulario}\n` +
+                `📞 Telefone: ${info.telefone}`,
         },
         { text: "Se precisar de outro assunto, é só digitar **menu**." },
     ];
