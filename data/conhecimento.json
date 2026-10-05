@@ -32,12 +32,12 @@
   {
     "id": "consulta_processo",
     "unidade": "JFES",
-    "resposta": "É possível consultar o processo tanto pelo número do processo quanto pelo CPF da parte, por meio da Consulta Pública do sistema EPROC da Justiça Federal, disponível nos links abaixo. O exemplo de consulta encontra-se no print abaixo.\n\nJFES - https://eproc-consulta.jfes.jus.br/eproc/externo_controlador.php?acao=processo_consulta_publica\n\nPara realizar a consulta, informe o número do processo ou o CPF da parte no campo correspondente e clique em \"Consultar\".\nCaso o processo não esteja sob sigilo, será possível visualizar as informações públicas disponíveis.\n![Tela do EPROC](/widget/img/consulta_processo_eproc.png)"
+    "resposta": "É possível consultar o processo tanto pelo **número do processo** quanto pelo **CPF da parte**, por meio da Consulta Pública do sistema EPROC da Justiça Federal, disponível no link abaixo:\n\n👉 https://eproc-consulta.jfes.jus.br/eproc/externo_controlador.php?acao=processo_consulta_publica\n\nPara realizar a consulta, informe o **número do processo** ou o **CPF da parte** no campo correspondente e clique em \"**Consultar**\".\n\nCaso o processo não esteja sob sigilo, será possível visualizar as informações públicas disponíveis.\n\nO exemplo de consulta encontra-se no print abaixo.\n\n![Tela de consulta do EPROC](/widget/img/consulta_processo_eproc.png)"
   },
   {
     "id": "consulta_processo",
     "unidade": "TRF2",
-    "resposta": "É possível consultar o processo tanto pelo número do processo quanto pelo CPF da parte, por meio da Consulta Pública do sistema EPROC da Justiça Federal, disponível nos links abaixo. O exemplo de consulta encontra-se no print abaixo.\n\nTRF2 - https://eproc-consulta.trf2.jus.br/eproc/externo_controlador.php?acao=processo_consulta_publica\n\nPara realizar a consulta, informe o número do processo ou o CPF da parte no campo correspondente e clique em \"Consultar\".\nCaso o processo não esteja sob sigilo, será possível visualizar as informações públicas disponíveis.\n![Tela do EPROC](/widget/img/consulta_processo_eproc.png)"
+    "resposta": "É possível consultar o processo tanto pelo **número do processo** quanto pelo **CPF da parte**, por meio da Consulta Pública do sistema EPROC da Justiça Federal, disponível no link abaixo:\n\n👉 https://eproc-consulta.trf2.jus.br/eproc/externo_controlador.php?acao=processo_consulta_publica\n\nPara realizar a consulta, informe o **número do processo** ou o **CPF da parte** no campo correspondente e clique em \"**Consultar**\".\n\nCaso o processo não esteja sob sigilo, será possível visualizar as informações públicas disponíveis.\n\nO exemplo de consulta encontra-se no print abaixo.\n\n![Tela de consulta do EPROC](/widget/img/consulta_processo_eproc.png)"
   },
   {
     "id": "emissao_custas",
