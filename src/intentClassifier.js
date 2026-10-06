@@ -197,6 +197,7 @@ async function classify(userText) {
         return { id, unidade, confianca, intencao };
     } catch (err) {
         console.log(userText);
+        console.log(err);
         console.error("[intentClassifier] erro ao classificar:", err.code ? `${err.code} - ${err.message}` : err.message);
         return { id: null, unidade: null, confianca: 0, aiError: true };
     }
