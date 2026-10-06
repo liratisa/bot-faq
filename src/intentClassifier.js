@@ -102,7 +102,7 @@ const REQUEST_TIMEOUT_MS = 30000;
 
 // Falhas transitorias de rede/servidor em que vale tentar de novo
 const RETRYABLE_CODES = new Set(["EPROTO", "ECONNRESET", "EPIPE", "EAI_AGAIN", "ECONNREFUSED", "ERR_SSL_WRONG_VERSION_NUMBER"]);
-const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
+const RETRYABLE_STATUS = new Set([429, 502, 503, 504, 404]);
 
 function isRetryable(err) {
     if (err && RETRYABLE_CODES.has(err.code)) return true;
@@ -196,8 +196,8 @@ async function classify(userText) {
         const intencao = ["assunto", "saudacao", "despedida", "menu", "suporte", "outro"].includes(parsed.intencao) ? parsed.intencao : "outro";
         return { id, unidade, confianca, intencao };
     } catch (err) {
-        console.log(userText);
-        console.log(err);
+        // console.log(userText);
+        // console.log(err);
         console.error("[intentClassifier] erro ao classificar:", err.code ? `${err.code} - ${err.message}` : err.message);
         return { id: null, unidade: null, confianca: 0, aiError: true };
     }

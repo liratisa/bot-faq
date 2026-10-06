@@ -33,12 +33,13 @@
         "" +
         ":host{all:initial}" +
         '*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}' +
+        ".jf2-parent{display:flex;flex-direction:column;gap:10px;align-items:flex-end}" +
         ".jf2-root{position:fixed;bottom:22px;right:22px;z-index:2147483000;display:flex;flex-direction:column;align-items:flex-end;gap:10px}" +
-        ".jf2-balloon{background:#0F2A4A;color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(15,42,74,.25);cursor:pointer;opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .35s ease;position:relative;max-width:200px}" +
+        ".jf2-balloon{background:#0F2A4A;color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:0 6px 20px rgba(15,42,74,.25);cursor:pointer;opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .35s ease;position:relative;max-width:200px; width:200px}" +
         ".jf2-balloon.show{opacity:1;transform:translateY(0)}" +
         '.jf2-balloon:after{content:"";position:absolute;bottom:-6px;right:22px;width:12px;height:12px;background:#0F2A4A;transform:rotate(45deg)}' +
         ".jf2-balloon-close{position:absolute;top:-7px;right:-7px;background:#fff;color:#0F2A4A;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer;font-weight:700}" +
-        ".jf2-fab{width:60px;height:60px;border-radius:50%;background:#0F2A4A;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(15,42,74,.35);transition:transform .18s ease}" +
+        ".jf2-fab{width:60px;height:60px;border-radius:50%;background:#0F2A4A;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(15,42,74,.35);transition:transform .18s ease;position:relative}" +
         ".jf2-fab:hover{transform:scale(1.06)}" +
         ".jf2-fab svg{width:28px;height:28px}" +
         ".jf2-dot{position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:#C89B3C;border-radius:50%;border:2px solid #fff}" +
@@ -79,10 +80,6 @@
     var wrap = document.createElement("div");
     wrap.className = "jf2-root";
     wrap.innerHTML =
-        '<div class="jf2-balloon" id="jf2-balloon">' +
-        '<span class="jf2-balloon-close" id="jf2-balloon-close">&times;</span>' +
-        "Dúvidas? Fale com o assistente virtual" +
-        "</div>" +
         '<div class="jf2-panel" id="jf2-panel">' +
         '<div class="jf2-header">' +
         "<div>" +
@@ -100,10 +97,16 @@
         "</div>" +
         // '<div class="jf2-footnote">Em caso de dúvida jurídica, procure orientação de um advogado ou da Defensoria.</div>' +
         "</div>" +
+        '<div class="jf2-parent">' +
+        '<div class="jf2-balloon" id="jf2-balloon">' +
+        '<span class="jf2-balloon-close" id="jf2-balloon-close">&times;</span>' +
+        "Dúvidas? Fale com o assistente virtual" +
+        "</div>" +
         '<button class="jf2-fab" id="jf2-fab" aria-label="Abrir assistente virtual">' +
         '<svg viewBox="0 0 24 24" fill="none"><path d="M4 4H20V16H8L4 20V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>' +
         '<span class="jf2-dot" id="jf2-dot"></span>' +
-        "</button>";
+        "</button>" +
+        "</div>";
     root.appendChild(wrap);
 
     var els = {

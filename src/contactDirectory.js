@@ -157,33 +157,49 @@ function search(query) {
     return scored.slice(0, 5).map((s) => s.entry);
 }
 
-/** Formata um registro de contato em texto legivel, SEM alterar os dados. */
 function formatContact(entry) {
     const lines = [];
-    console.log(entry);
-    lines.push(`**${entry.nome}**`);
+
+    // Coloca a primeira letra de cada palavra em maiúscula
+    const toTitleCase = (str) => {
+        if (!str) return "";
+
+        return str.toLowerCase().replace(/(^|[\s-])([a-záàâãéêíóôõúüç])/gi, (_, separator, letter) => {
+            return separator + letter.toUpperCase();
+        });
+    };
+
     if (entry.municipio || entry.uf) {
-        lines.push(`${entry.municipio || ""}${entry.municipio && entry.uf ? " - " : ""}${entry.uf || ""}\n`);
+        lines.push(`**${entry.nome}**\n${toTitleCase(entry.municipio || "")}${entry.municipio && entry.uf ? " - " : ""}${entry.uf || ""}`);
+    } else {
+        lines.push(`**${entry.nome}**`);
     }
+
     if (Array.isArray(entry.competencia) && entry.competencia.length) {
-        lines.push(`• Competência: ${entry.competencia.join(", ")}`);
+        lines.push(`⚖️ Competência:\n${entry.competencia.join(", ")}`);
     }
+
     if (entry.endereco) {
-        lines.push(`• Endereço: ${entry.endereco}${entry.complemento ? " - " + entry.complemento : ""}`);
+        lines.push(`📍 Endereço: \n${toTitleCase(entry.endereco)}${entry.complemento ? " - " + toTitleCase(entry.complemento) : ""}`);
     }
+
     if (Array.isArray(entry.telefones) && entry.telefones.length) {
-        lines.push(`• Telefone(s): ${entry.telefones.join(" | ")}`);
+        lines.push(`📞 Telefone(s):\n ${entry.telefones.map(toTitleCase).join(" | ")}`);
     }
+
     if (Array.isArray(entry.whatsapp) && entry.whatsapp.length) {
-        lines.push(`• WhatsApp: ${entry.whatsapp.join(" | ")}`);
+        lines.push(`📱 WhatsApp:\n${entry.whatsapp.join(" | ")}`);
     }
+
     if (Array.isArray(entry.emails) && entry.emails.length) {
-        lines.push(`• E-mail: ${entry.emails.join(" | ")}`);
+        lines.push(`✉️ E-mail:\n ${entry.emails.join(" | ")}`);
     }
+
     if (entry.balcao_virtual) {
-        lines.push(`• Balcão virtual: ${entry.balcao_virtual}`);
+        lines.push(`💻 Balcão virtual: ${entry.balcao_virtual}`);
     }
-    return lines.join("\n");
+
+    return lines.join("\n\n");
 }
 
 module.exports = { search, formatContact };
