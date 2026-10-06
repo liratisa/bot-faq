@@ -196,7 +196,7 @@ async function classify(userText) {
         const intencao = ["assunto", "saudacao", "despedida", "menu", "suporte", "outro"].includes(parsed.intencao) ? parsed.intencao : "outro";
         return { id, unidade, confianca, intencao };
     } catch (err) {
-        console.log(text);
+        console.log(userText);
         console.error("[intentClassifier] erro ao classificar:", err.code ? `${err.code} - ${err.message}` : err.message);
         return { id: null, unidade: null, confianca: 0, aiError: true };
     }
