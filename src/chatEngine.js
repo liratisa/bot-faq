@@ -319,7 +319,7 @@ function supportMessages(session) {
     return [
         {
             text:
-                "Entendi a sua situação. 😕 Para esse tipo de problema não tenho uma orientação pronta, mas a equipe da Central de Atendimento pode te ajudar. Abra um chamado pelo formulário ou ligue:\n\n" +
+                "Para esse caso, não tenho uma orientação disponível no momento... 🤔 A nossa equipe da Central de Atendimento pode ajudar com problemas e solicitações. Abra um chamado pelo formulário ou entre em contato por telefone:\n\n" +
                 `📝 Formulário: ${info.formulario}\n` +
                 `📞 Telefone: ${info.telefone}`,
         },
