@@ -56,7 +56,7 @@ app.post("/api/chat", async (req, res) => {
         console.error("[POST /api/chat] erro:", err);
         res.status(500).json({
             error: "Erro interno.",
-            messages: [{ text: "Ocorreu um erro por aqui. Pode tentar novamente em instantes?" }],
+            messages: [{ text: "Ocorreu um erro por aqui... Por favor, tente novamente em instantes." }],
         });
     }
 });

@@ -42,13 +42,13 @@ const MENU_META = {
         parent: "cadastro",
     },
     cadastro_perito: {
-        label: "Cadastro de perito",
+        label: "Cadastro de Perito",
         keywords: ["cadastro de perito", "cadastro perito", "perito"],
         needsUnidade: true,
         parent: "cadastro",
     },
     cadastro_sociedade_advogados: {
-        label: "Cadastro de sociedade de advogados",
+        label: "Cadastro de Sociedade de Advogados",
         keywords: ["cadastro de sociedade de advogados", "sociedade de advogados", "cadastro sociedade"],
         needsUnidade: true,
         parent: "cadastro",

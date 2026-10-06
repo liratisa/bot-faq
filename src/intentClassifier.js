@@ -188,7 +188,7 @@ async function classify(userText) {
         const response = await requestWithRetry(config);
         const text = response.data.choices?.[0]?.message?.content || "{}";
         const parsed = parseJsonLoose(text);
-        console.log(parsed);
+        console.log(text, parsed);
         const knownIds = kb.getKnownIds();
         const id = knownIds.includes(parsed.id) ? parsed.id : null;
         const unidade = ["TRF2", "JFRJ", "JFES"].includes(parsed.unidade) ? parsed.unidade : null;
