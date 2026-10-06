@@ -307,7 +307,7 @@ function ticketClosingMessage() {
 }
 
 function notUnderstoodMessage() {
-    return "Desculpe, não entendi... 😕 Por favor, digite novamente, com outras palavras, ou escolher uma das opções abaixo:\n" + menuText();
+    return "Desculpe, não entendi... 😕 Por favor, digite novamente, com outras palavras, ou escolher uma das opções abaixo:\n\n" + menuText();
 }
 
 // Problema de acesso/login (ou outro caso sem conteudo na base): encaminha para a Central de Atendimento
