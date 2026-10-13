@@ -53,16 +53,22 @@ const MENU_META = {
         needsUnidade: true,
         parent: "cadastro",
     },
+    cadastro_advogado: {
+        label: "Cadastro de Advogados",
+        keywords: ["cadastro de advogados", "advogado", "cadastro advogado", "cadastro advogados"],
+        needsUnidade: true,
+        parent: "cadastro",
+    },
     // emissao_custas: {
     //     label: "Emissao de custas / GRU",
     //     keywords: ["emissao de custas", "custas", "gru", "guia de recolhimento"],
     //     needsUnidade: false,
     // },
-    // consulta_rpv: {
-    //     label: "Consulta de RPV",
-    //     keywords: ["consulta de rpv", "rpv", "requisicao de pequeno valor"],
-    //     needsUnidade: true,
-    // },
+    consulta_rpv: {
+        label: "Consulta de RPV",
+        keywords: ["consulta de rpv", "rpv", "requisicao de pequeno valor"],
+        needsUnidade: false,
+    },
     contato_unidade: {
         label: "Contato de unidades (vara, foro etc.)",
         keywords: ["contato", "endereco", "telefone", "onde fica", "unidade", "vara", "foro", "endereco"],
@@ -251,10 +257,29 @@ class KnowledgeBase {
         if (!entries || entries.length === 0) return null;
 
         if (entries.length === 1 && !entries[0].unidade) {
-            return entries[0].resposta;
+            let resposta = entries[0].resposta;
+            if (resposta.includes("@FORM")) {
+                resposta = resposta.replace("@FORM", CHAMADO_INFO.formulario);
+            }
+            if (resposta.includes("@TEL")) {
+                resposta = resposta.replace("@TEL", CHAMADO_INFO.telefone);
+            }
+            return resposta;
         }
+
         const found = entries.find((e) => e.unidade === unidade);
-        return found ? found.resposta : null;
+
+        let resposta = found?.resposta;
+
+        if (resposta?.includes("@FORM")) {
+            resposta = resposta.replace("@FORM", CHAMADO_INFO.formulario);
+        }
+        if (resposta?.includes("@TEL")) {
+            resposta = resposta.replace("@TEL", CHAMADO_INFO.telefone);
+        }
+        return resposta ?? null;
+
+        //return found ? found.resposta : null;
     }
 
     /** Tenta casar a unidade digitada livremente (ex.: "rio", "es", "trf2"). */
