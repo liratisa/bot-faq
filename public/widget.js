@@ -310,7 +310,7 @@
                 return playBotMessages(data.messages || []);
             })
             .catch(function () {
-                addMessage("Não consegui enviar sua mensagem agora. Tente novamente em instantes.", "bot");
+                addMessage("Não consegui receber sua mensagem agora. Tente novamente em instantes.", "bot");
             })
             .finally(function () {
                 setSending(false);
