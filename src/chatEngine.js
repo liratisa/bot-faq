@@ -503,7 +503,7 @@ async function handleFreeText(session, text) {
         confidence: ai.confianca ?? 0,
     };
 }
-
+// dkdkdkd
 /**
  * Processa uma mensagem do usuario dado o estado atual da sessao.
  * Retorna { messages: [{text, buttons?}], matchedId, unidade, matchMethod, confidence }
